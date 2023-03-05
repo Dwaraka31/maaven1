@@ -21,7 +21,7 @@ pipeline
         {
             steps
             {
-              sh '''scp /var/lib/jenkins/workspace/DeclarativePipeline/webapp/target/webapp.war ubuntu@172.31.31.218 /var/lib/tomcat9/webapps/testapp.war'''
+              sh '''scp /var/lib/jenkins/workspace/DeclarativePipeline/webapp/target/webapp.war ubuntu@172.31.31.218:/var/lib/tomcat9/webapps/testapp.war'''
             }
         }
         stage('continuouTesting')
@@ -37,7 +37,7 @@ pipeline
             steps
             {
                 input message: 'Approval for deplyoment', submitter: 'Dwaraka'
-                sh '''scp  /var/lib/jenkins/workspace/DeclarativePipeline/webapp/target/webapp.war ubuntu@172.31.19.81 /var/lib/tomcat9/webapps/prodapp.war'''
+                sh '''scp  /var/lib/jenkins/workspace/DeclarativePipeline/webapp/target/webapp.war ubuntu@172.31.19.81:/var/lib/tomcat9/webapps/prodapp.war'''
             }
         }
     }
