@@ -21,7 +21,7 @@ pipeline
         {
             steps
             {
-                deploy adapters: [tomcat9(credentialsId: 'aa4862d1-971e-40d4-a340-45c7b66025af', path: '', url: 'http://172.31.31.218:8080')], contextPath: 'dtest1', war: '**/*.war'
+              sh '''scp /var/lib/jenkins/workspace/DeclarativePipeline/webapp/target/webapp.war ubuntu@172.31.31.218 /var/lib/tomcat9/webapps/testapp.war'''
             }
         }
         stage('continuouTesting')
@@ -37,7 +37,7 @@ pipeline
             steps
             {
                 input message: 'Approval for deplyoment', submitter: 'Dwaraka'
-                deploy adapters: [tomcat9(credentialsId: 'aa4862d1-971e-40d4-a340-45c7b66025af', path: '', url: 'http://172.31.19.81:8080')], contextPath: 'dprod1', war: '**/*.war'
+                sh '''scp  /var/lib/jenkins/workspace/DeclarativePipeline/webapp/target/webapp.war ubuntu@172.31.19.81 /var/lib/tomcat9/webapps/prodapp.war'''
             }
         }
     }
