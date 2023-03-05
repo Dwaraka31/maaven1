@@ -3,44 +3,106 @@ pipeline
     agent any
     stages
     {
-        stage('ContinuousDownload')
-        {
+        stage('continuousDownload')
+        {		
             steps
             {
-                git 'https://github.com/intelliqittrainings/maven.git'
+				script
+				{
+					try
+					{
+						git 'https://github.com/Dwaraka31/maaven1.git'
+					}
+					catch(Exception e1)
+					{
+						mail bcc: '', body: '''Jenkins job failed in Download stage Error: e1.getMessage()''', cc: '', from: '', replyTo: '', subject: 'CI-CD failed', to: 'bdwaraka31@gmail.com'
+						exit(1)
+					}
+									
+				}
+                
             }
         }
         stage('ContinuousBuild')
         {
             steps
             {
-              sh label: '', script: 'mvn package'
-            }
+				script
+				{
+					try
+					{
+						sh 'mvn package'
+					}
+					catch(Exception e2)
+					{ 
+					
+						mail bcc: '', body: '''Jenkins job failed in build stage Error: e2.getMessage()''', cc: '', from: '', replyTo: '', subject: 'CI-CD failed', to: 'bdwaraka31@gmail.com'
+						exit(1)
+					}					
+				}
                 
+            }
         }
-        stage('ContinuousDeployment')
+        stage('continuousDeployment')
         {
             steps
             {
-                sh label: '', script: 'scp /home/ubuntu/.jenkins/workspace/DeclarativePipeline/webapp/target/webapp.war ubuntu@172.31.31.15:/var/lib/tomcat8/webapps/testwebapp.war'
+				script
+				{
+					try
+					{
+						sh '''scp /var/lib/jenkins/workspace/DeclarativePipeline/webapp/target/webapp.war ubuntu@172.31.31.218:/var/lib/tomcat9/webapps/testapp.war'''					
+					}
+					catch(Exception e3)
+					{
+						mail bcc: '', body: 'Jenkins job failed in deployment stage Error: e3.getMessage()', cc: '', from: '', replyTo: '', subject: 'CI-CD failed', to: 'bdwaraka31@gmail.com'
+						exit(1)
+
+					}
+				}
+              
             }
-            
         }
-        stage('ContinuousTesting')
+        stage('continuouTesting')
         {
             steps
             {
-                git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
-                sh label: '', script: 'java -jar /home/ubuntu/.jenkins/workspace/DeclarativePipeline/testing.jar'
+				script
+				{
+					try
+					{
+						git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+						sh 'java -jar /var/lib/jenkins/workspace/DeclarativePipeline/testing.jar'
+					}
+					catch(Exception e4)
+					{
+						
+						mail bcc: '', body: 'Jenkins job failed in testing stage Error: e4.getMessage()', cc: '', from: '', replyTo: '', subject: 'CI-CD failed', to: 'bdwaraka31@gmail.com'
+						exit(1)					
+					}
+				}
+                
             }
         }
-        stage('ContinuousDelivery')
+        stage('continuousDelivery')
         {
-           steps
-           {
-               input message: 'Waiting for Approval from the DM!', submitter: 'naresh'
-               sh label: '', script: 'scp /home/ubuntu/.jenkins/workspace/DeclarativePipeline/webapp/target/webapp.war ubuntu@172.31.26.41:/var/lib/tomcat8/webapps/prodwebapp.war'
-           }
+            steps
+            {
+				script
+				{
+					try
+					{
+						input message: 'Approval for deplyoment', submitter: 'Dwaraka'
+						sh '''scp  /var/lib/jenkins/workspace/DeclarativePipeline/webapp/target/webapp.war ubuntu@172.31.19.81:/var/lib/tomcat9/webapps/prodapp.war'''
+					}
+					catch(Exception e5)
+					{
+						mail bcc: '', body: 'Jenkins job failed in Delivery stage Error: e5.getMessage()', cc: '', from: '', replyTo: '', subject: 'CI-CD failed', to: 'bdwaraka31@gmail.com'
+						
+					}
+				}
+                
+            }
         }
     }
     
